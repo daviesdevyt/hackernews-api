@@ -1,15 +1,10 @@
 from time import sleep
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
-import requests
+import hackernewsapi
 import threading
 
 # Create your views here.
-def make_request(method, url, **kwargs):
-    response = requests.request(method, url, **kwargs)
-    if response.status_code == 200:
-        return response.json()
-    return None
 
 @api_view(["GET"])
 def index(request):
