@@ -23,5 +23,4 @@ class Comment(Base):
     parent = models.ForeignKey(Post, on_delete=models.CASCADE, null=True, blank=True)
 
 class PollOption(Base):
-    order_id = models.IntegerField(default=0)
     parent = models.ForeignKey(Post, on_delete=models.CASCADE, null=True, blank=True)
