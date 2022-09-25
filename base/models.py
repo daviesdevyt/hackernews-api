@@ -16,10 +16,11 @@ class Post(models.Model):
     score = models.IntegerField(null=True, blank=True)
 
 
-class Comments(models.Model):
+class Comment(models.Model):
     text = models.TextField()
     parent = models.ForeignKey(Post, on_delete=models.CASCADE)
 
 class PollOption(models.Model):
+    order_id = models.IntegerField(default=0)
     parent = models.IntegerField(null=True, blank=True)
     post = models.ForeignKey(Post, on_delete=models.CASCADE)
