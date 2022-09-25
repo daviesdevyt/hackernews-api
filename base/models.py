@@ -24,4 +24,5 @@ class Comment(Base):
 
 class PollOption(Base):
     order_id = models.IntegerField(default=0)
+    score = models.IntegerField(null=True, blank=True)
     parent = models.ForeignKey(Post, on_delete=models.CASCADE, null=True, blank=True)

@@ -3,6 +3,7 @@ from pytz import timezone
 from time import sleep
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
+from .serializer import PostSerializer
 from . import hackernewsapi
 import threading
 from .models import PollOption, Post, Comment
@@ -42,8 +43,10 @@ if Post.objects.count() < 10:
 # Create your views here.
 
 @api_view(["GET"])
-def index(request):
-    return Response("Hello world")
+def latest(request):
+    latest_posts = Post.objects.all().order_by("-time")
+    serializer = PostSerializer(latest_posts, many=True)
+    return Response(serializer.data)
 
 def get_data(): #Cron job for every second
     while True:
