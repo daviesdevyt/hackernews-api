@@ -9,6 +9,7 @@ import threading
 from .models import PollOption, Post, Comment
 from django.db import IntegrityError
 from django.db.models import Q
+from rest_framework.pagination import DjangoPaginator
 
 # Generator function to get the items
 def get_and_save_items(items):
@@ -48,7 +49,9 @@ except IntegrityError as e:
 @api_view(["GET"])
 def latest(request):
     latest_posts = Post.objects.all().order_by("-id")
-    serializer = PostSerializer(latest_posts, many=True)
+    paginator = DjangoPaginator(latest_posts, 5)
+    page_object = paginator.get_page(request.GET.get("page"))
+    serializer = PostSerializer(page_object, many=True)
     return Response(serializer.data)
 
 
@@ -56,15 +59,18 @@ def latest(request):
 def filter_news(request):
     item_type = request.GET.get("type")
     if item_type:
-        if item_type == "comment":
-            posts = Comment.objects.order_by("-id")
-            serializer = CommentSerializer(posts, many=True)
-        elif item_type == "pollopt":
-            posts = PollOption.objects.order_by("-id")
-            serializer = PollOptionSerializer(posts, many=True)
-        else:
-            posts = Post.objects.filter(type=item_type).order_by("-id")
-            serializer = PollOptionSerializer(posts, many=True)
+        serializers = {"comment": CommentSerializer, "pollopt":PollOptionSerializer, "post":PostSerializer}
+        object_models = {"comment": Comment, "pollopt":PollOption, "post":Post}
+        if item_type not in serializers:
+            item_type = "post"
+
+        serializer_model = serializers[item_type]
+        type = object_models[item_type]
+        data = type.objects.order_by("-id") 
+
+        paginator = DjangoPaginator(data, 4)
+        page_object = paginator.get_page(request.GET.get("page"))
+        serializer = serializer_model(page_object, many=True)
         return Response(serializer.data)
     return Response()
 
@@ -81,6 +87,10 @@ def search(request):
             pollopts += PollOptionSerializer(PollOption.objects.filter(text__contains=query), many=True).data
             posts += PostSerializer(Post.objects.filter((Q(text__contains=query) | Q(title__contains=query))), many=True).data
         return Response({"comments":comments, "poll_options":pollopts, "posts":posts})
+    return Response()
+
+@api_view(["GET"])
+def index(request):
     return Response()
 
 def get_data(): #Cron job for every second
