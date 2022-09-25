@@ -8,13 +8,13 @@ from . import hackernewsapi
 import threading
 from .models import PollOption, Post, Comment
 from django.db import IntegrityError
+from django.db.models import Q
 
 # Generator function to get the items
 def get_and_save_items(items):
     for item in items:
         data = hackernewsapi.get_item(item)
 
-        # Recursion to add any comments of the news item
         if data.get("kids"):
             del data['kids']
 
@@ -66,6 +66,22 @@ def filter_news(request):
             posts = Post.objects.filter(type=item_type).order_by("-id")
             serializer = PollOptionSerializer(posts, many=True)
         return Response(serializer.data)
+    return Response()
+
+@api_view(["GET"])
+def search(request):
+    q = request.GET.get("query")
+    if q:
+        querys = q.split()
+        comments = []
+        pollopts = []
+        posts = []
+        for query in querys:
+            comments += CommentSerializer(Comment.objects.filter(text__contains=query), many=True).data
+            pollopts += PollOptionSerializer(PollOption.objects.filter(text__contains=query), many=True).data
+            posts += PostSerializer(Post.objects.filter((Q(text__contains=query) | Q(title__contains=query))), many=True).data
+        return Response({"comments":comments, "poll_options":pollopts, "posts":posts})
+    return Response()
 
 def get_data(): #Cron job for every second
     def max_on_db():
