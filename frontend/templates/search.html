@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+{% load static %}
+<html>
+<head>
+    <link rel="stylesheet" href="{% static 'search-bar.css' %}">
+    <script src="{% static 'search-bar.js' %}"></script>
+</head>
+  <body>
+    {% include 'nav.html' %}
+    <div class='search_con'>
+      <h3 align="center">Uses API endpoint from <a href="http://localhost:8000/api/search?query=canada">/api/search?query={SEARCH-QUERY}</a></h3>
+      <br>
+
+      <form class="input_con">
+        <input type="text" placeholder='Search for Query...' spellCheck="False" id="queryFind"/>
+        <span id="clearBtn"><i class="bi bi-x-lg"></i></span>
+        <span class='h-line'></span>
+        <a id="search">
+          <span><i class="bi bi-search"></i></span>
+        </a>
+      </form>
+      <br>
+      <h1 align="center">News !!</h1>
+      <ul id="comments">
+        <template search-out>
+          <li align="center">Title</li>
+          <br>
+        </template>
+      </ul>
+    </div>
+  </body>
+</html>

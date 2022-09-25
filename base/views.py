@@ -79,14 +79,13 @@ def search(request):
     q = request.GET.get("query")
     if q:
         querys = q.split()
-        comments = []
-        pollopts = []
-        posts = []
+        data = []
         for query in querys:
-            comments += CommentSerializer(Comment.objects.filter(text__contains=query), many=True).data
-            pollopts += PollOptionSerializer(PollOption.objects.filter(text__contains=query), many=True).data
-            posts += PostSerializer(Post.objects.filter((Q(text__contains=query) | Q(title__contains=query))), many=True).data
-        return Response({"comments":comments, "poll_options":pollopts, "posts":posts})
+            data += Post.objects.filter(title__contains=query)
+        paginator = DjangoPaginator(data, 4)
+        page_object = paginator.get_page(request.GET.get("page"))
+        serializer = PostSerializer(page_object, many=True)
+        return Response(serializer.data)
     return Response()
 
 @api_view(["GET"])

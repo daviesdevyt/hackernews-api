@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+{% load static %}
+<html>
+  <head>
+    <script src="{% static 'filter.js' %}"></script>
+  </head>
+  <body>
+    {% include 'nav.html' %}
+    <br><br>
+    <div class="dropdown" align="center">
+      <button class="btn btn-primary dropdown-toggle px-5" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+        Choose a topic
+      </button>
+      <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+        <a class="dropdown-item">story</a>
+        <a class="dropdown-item">job</a>
+        <a class="dropdown-item">poll</a>
+        <a class="dropdown-item">comment</a>
+      </div>
+    </div>
+    <br>
+    <h1 align="center">Output</h1>
+    <div id="posts">
+      <template search-out>
+        <p align="center">Title</p>
+      </template>
+    </div>
+  </body>
+</html>
