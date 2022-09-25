@@ -7,38 +7,40 @@ from .serializer import PostSerializer
 from . import hackernewsapi
 import threading
 from .models import PollOption, Post, Comment
+from django.db import IntegrityError
 
 # Generator function to get the items
 def get_posts(items):
     for item in items:
         data = hackernewsapi.get_item(item)
 
-        # Recursion to add any comments if the news item
+        # Recursion to add any comments of the news item
         if data.get("kids"):
-            if len(data["kids"]) > 0:
-                get_posts(data['kids'])            
             del data['kids']
 
         if data.get("time"):
             data["time"] = datetime.fromtimestamp(data["time"], tz=timezone('UTC'))
 
         post_type = data['type']
-        print(post_type)
         if post_type in ["comment", "pollopt"]:
             if data.get('parent'):
-                data['parent'] = Post.objects.get(id=data['parent'])
+                parent = Post.objects.filter(id=data['parent']).first()
+                data['parent'] = parent if parent else None
             if post_type == "comment":
                 Comment.objects.create(**data)
             elif post_type == "pollopt":
                 PollOption.objects.create(**data)
-            return
+            continue
 
         yield Post(**data)
 
 # Get first 10 posts for testing purposes
-if Post.objects.count() < 10:
-    post_ids = hackernewsapi.get_new_stories()[:10]
-    Post.objects.bulk_create(get_posts(post_ids))
+try:
+    if Post.objects.count() < 10:
+        post_ids = hackernewsapi.get_latest(10)
+        Post.objects.bulk_create(get_posts(post_ids))
+except IntegrityError as e:
+    print(e)
 
 # Create your views here.
 
@@ -50,6 +52,10 @@ def latest(request):
 
 def get_data(): #Cron job for every second
     while True:
+        max_id = hackernewsapi.get_max_id()
+        last_on_db = Post.objects.last().id
+        post_ids = hackernewsapi.get_latest(max_id-last_on_db)
+        Post.objects.bulk_create(get_posts(post_ids))
         sleep(5*60)
 
 t = threading.Thread(target=get_data, daemon=True)
