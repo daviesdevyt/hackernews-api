@@ -1,7 +1,7 @@
 from time import sleep
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
-import hackernewsapi
+from . import hackernewsapi
 import threading
 
 # Create your views here.
