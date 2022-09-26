@@ -62,12 +62,15 @@ def filter_news(request):
         serializers = {"comment": CommentSerializer, "pollopt":PollOptionSerializer, "post":PostSerializer}
         object_models = {"comment": Comment, "pollopt":PollOption, "post":Post}
         if item_type not in serializers:
-            item_type = "post"
-
-        serializer_model = serializers[item_type]
-        type = object_models[item_type]
-        data = type.objects.order_by("-id") 
-
+            model = "post"
+        else:
+            model = item_type
+        serializer_model = serializers[model]
+        type = object_models[model]
+        if model == "post":
+            data = type.objects.filter(type=item_type).all().order_by('-id')
+        else:
+            data = type.objects.order_by("-id")
         paginator = DjangoPaginator(data, 4)
         page_object = paginator.get_page(request.GET.get("page"))
         serializer = serializer_model(page_object, many=True)
