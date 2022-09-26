@@ -3,6 +3,7 @@ window.onload = (e) => {
     const dropdownButton = document.getElementById("dropdownMenuButton")
     const searchOut = document.querySelector("[search-out]");
     const pageNav = document.querySelector("[page]");
+    const pageNum = document.querySelector("page");
     const results = document.getElementById("posts");  
     const prevPage = document.getElementById("prev");  
     const nextPage = document.getElementById("next");  
@@ -10,6 +11,7 @@ window.onload = (e) => {
     
     prevPage.addEventListener("click", (e) => {
         currPage--
+        if (currPage < 1) currPage = 1
         fetch_news(dropdownButton)
     })
     nextPage.addEventListener("click", (e) => {
@@ -24,11 +26,26 @@ window.onload = (e) => {
     }))
 
     function fetch_news(item) {
+        pageNum.innerHTML = currPage
         fetch("/api/filter-news?type="+item.innerHTML+"&page="+currPage)
         .then(res => res.json())
         .then(data => {
         results.innerText = ""
         data.forEach((element) => {
+            if (element.has_next != undefined) {
+                if (element.has_next != true){
+                    nextPage.style.visibility = "hidden"
+                }
+                else{
+                    nextPage.style.visibility = "visible"
+                }
+                if (element.has_previous != true){
+                    prevPage.style.visibility = "hidden"
+                }
+                else{
+                    prevPage.style.visibility = "visible"
+                }
+            }
             let children = searchOut.content.cloneNode(true).children
             let title = children[0]
             title.innerHTML = element.title

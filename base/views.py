@@ -1,3 +1,4 @@
+from collections import OrderedDict
 from datetime import datetime
 from pytz import timezone
 from time import sleep
@@ -8,10 +9,7 @@ from . import hackernewsapi
 import threading
 from .models import PollOption, Post, Comment
 from django.db import IntegrityError
-from django.db.models import Q
 from rest_framework.pagination import DjangoPaginator
-
-from base import serializer
 
 # Generator function to get the items
 def get_and_save_items(items):
@@ -54,7 +52,9 @@ def latest(request):
     paginator = DjangoPaginator(latest_posts, 5)
     page_object = paginator.get_page(request.GET.get("page"))
     serializer = PostSerializer(page_object, many=True)
-    return Response(serializer.data)
+    d = serializer.data
+    d.append(OrderedDict({"has_next": page_object.has_next()})) # adds a has_next variable to the data sent to help pagination on the frontend
+    return Response(d)
 
 
 @api_view(["GET"])
@@ -73,10 +73,12 @@ def filter_news(request):
             data = type.objects.filter(type=item_type).all().order_by('-id')
         else:
             data = type.objects.order_by("-id")
-        paginator = DjangoPaginator(data, 4)
+        paginator = DjangoPaginator(data, 5)
         page_object = paginator.get_page(request.GET.get("page"))
         serializer = serializer_model(page_object, many=True)
-        return Response(serializer.data)
+        d = serializer.data
+        d.append(OrderedDict({"has_next": page_object.has_next(), "has_previous": page_object.has_previous()})) # adds a has_next variable to the data sent to help pagination on the frontend
+        return Response(d)
     return Response()
 
 @api_view(["GET"])
@@ -90,7 +92,9 @@ def search(request):
         paginator = DjangoPaginator(data, 4)
         page_object = paginator.get_page(request.GET.get("page"))
         serializer = PostSerializer(page_object, many=True)
-        return Response(serializer.data)
+        d = serializer.data
+        d.append(OrderedDict({"has_next": page_object.has_next()})) # adds a has_next variable to the data sent to help pagination on the frontend
+        return Response(d)
     return Response()
 
 @api_view(["GET"])

@@ -28,6 +28,11 @@ window.onload = (e) => {
     .then(data => {
       console.log(data)
       data.forEach((element) => {
+        if (element.has_next != undefined) {
+          if (element.has_next != true){
+              nextPage.style.display = "none"
+          }
+        }
         let children = searchOut.content.cloneNode(true).children
         let title = children[0]
         title.innerHTML = element.title

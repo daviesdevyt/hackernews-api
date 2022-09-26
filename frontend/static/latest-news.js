@@ -15,6 +15,11 @@ window.onload = (e) => {
             currPage++
             console.log(data)
             data.forEach((element) => {
+                if (element.has_next != undefined) {
+                    if (element.has_next != true){
+                        more.style.display = "none"
+                    }
+                }
                 let children = searchOut.content.cloneNode(true).children
                 let title = children[0]
                 title.innerHTML = element.title
