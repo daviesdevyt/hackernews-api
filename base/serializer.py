@@ -13,10 +13,7 @@ class PollOptionSerializer(serializers.ModelSerializer):
 
 class PostSerializer(serializers.ModelSerializer):
     comments = CommentSerializer(many=True)
-    def __init__(self, instance=None, data=..., **kwargs):
-        if isinstance(instance, PollOption):
-            self.poll_options = PollOption(many=True)
-        super().__init__(instance, data, **kwargs)
+    poll_options = PollOptionSerializer(many=True)
     class Meta:
         model = Post
         fields = "__all__"

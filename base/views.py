@@ -11,6 +11,8 @@ from django.db import IntegrityError
 from django.db.models import Q
 from rest_framework.pagination import DjangoPaginator
 
+from base import serializer
+
 # Generator function to get the items
 def get_and_save_items(items):
     for item in items:
@@ -94,6 +96,30 @@ def search(request):
 @api_view(["GET"])
 def index(request):
     return Response()
+
+@api_view(["POST"])
+def add_item(request, item_type):
+    item_types = ["comment", "story", "job", "pollopt", "poll"]
+    object_models = {"comment": Comment, "pollopt":PollOption, "post":Post}
+    model_serializers = {"comment": CommentSerializer, "pollopt":PollOptionSerializer, "post":PostSerializer}
+    
+    if item_type not in item_types:
+        return Response("Bad request: Invalid type", status=400)
+    elif item_type not in object_models:
+        model = "post"
+    else:
+        model = item_type()
+    
+    model_obj = object_models[model]
+    model_serializer = model_serializers[model]
+
+    try:
+        obj = model_obj.objects.create(**request.data)
+        serializer = model_serializer(obj)
+    except Exception as e:
+        return Response("Bad request: "+str(e), status=400)
+
+    return Response(serializer.data)
 
 def get_data(): #Cron job for every second
     def max_on_db():
