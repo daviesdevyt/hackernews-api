@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+{% load static %}
+<html>
+  <head>
+    <script src="{% static 'latest-news.js' %}"></script>
+  </head>
+  <body>
+    {% include 'nav.html' %}
+    <br><br>
+    <h1 align="center">Latest news</h1>
+    <div id="news">
+      <template search-out>
+        <p align="center">Title<sub>time</sub></p>
+      </template>
+
+    </div>
+    <br>
+    <p align="center"><button id="more" class="btn btn-outline-secondary">Load More</button></p>
+  </body>
+</html>

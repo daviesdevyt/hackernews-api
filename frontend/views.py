@@ -9,3 +9,6 @@ def search(request):
 
 def filter(request):
     return render(request, "filter.html")
+
+def latest(request):
+    return render(request, "latest-news.html")
