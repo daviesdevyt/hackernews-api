@@ -7,6 +7,7 @@ window.onload = (e) => {
     const results = document.getElementById("posts");  
     const prevPage = document.getElementById("prev");  
     const nextPage = document.getElementById("next");  
+    const pageCount = document.querySelector("page-count");  
     var currPage = 1;
     
     prevPage.addEventListener("click", (e) => {
@@ -45,10 +46,14 @@ window.onload = (e) => {
                 else{
                     prevPage.style.visibility = "visible"
                 }
+                if (element.page_count != undefined) pageCount.innerHTML = element.page_count
             }
             let children = searchOut.content.cloneNode(true).children
             let title = children[0]
-            title.innerHTML = element.title
+            if (element.title != undefined) title.innerHTML = element.title
+            else if (element.text != undefined) title.innerHTML = element.text.slice(0, 50)+"..."
+            else if (element.url != undefined) title.innerHTML = element.url.slice(0, 50)+"..."
+            else title.innerHTML = "No presentable value"
             results.appendChild(title)
         })
     })}

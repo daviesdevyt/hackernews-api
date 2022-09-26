@@ -77,7 +77,7 @@ def filter_news(request):
         page_object = paginator.get_page(request.GET.get("page"))
         serializer = serializer_model(page_object, many=True)
         d = serializer.data
-        d.append(OrderedDict({"has_next": page_object.has_next(), "has_previous": page_object.has_previous()})) # adds a has_next variable to the data sent to help pagination on the frontend
+        d.append(OrderedDict({"has_next": page_object.has_next(), "has_previous": page_object.has_previous(), "page_count":page_object.paginator.num_pages})) # adds a has_next variable to the data sent to help pagination on the frontend
         return Response(d)
     return Response()
 

@@ -7,6 +7,7 @@
   <body>
     {% include 'nav.html' %}
     <br><br>
+    <h3 align="center">Uses API endpoint from <a href="http://localhost:8000/api/filter-news?type=story">/api/filter-news?type={story}</a></h3>
     <div class="dropdown" align="center">
       <button class="btn btn-primary dropdown-toggle px-5" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
         Choose a topic
@@ -19,7 +20,7 @@
       </div>
     </div>
     <br>
-    <h4 align="center">If the news finishes, it starts from the begining</h4>
+
     <h1 align="center">Output</h1>
     <div id="posts">
       <template search-out>
@@ -27,6 +28,6 @@
       </template>
     </div>
     <br>
-    <p align="center" page style="display: none;"><button id="prev" class="btn btn-outline-secondary">previous</button><page style="padding-left: 20px; padding-right:20px;">1</page><button class="btn btn-outline-secondary" id="next">next</button></p>
+    <p align="center" page style="display: none;"><button id="prev" class="btn btn-outline-secondary">previous</button><text style="padding-left: 20px; padding-right:20px;"><page>1</page> of <page-count>1</page-count></text><button class="btn btn-outline-secondary" id="next">next</button></page-count>
   </body>
 </html>
