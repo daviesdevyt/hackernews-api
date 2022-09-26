@@ -4,8 +4,8 @@ window.onload = (e) => {
   const inputArea = document.getElementById("queryFind");
   const searchBtn = document.getElementById("search");
   const searchOut = document.querySelector("[search-out]");
+  const pageNav = document.querySelector("[page]");
   const results = document.getElementById("comments");
-  const prevPage = document.getElementById("prev");  
   const nextPage = document.getElementById("next");
   var currPage = 1;
   
@@ -17,10 +17,6 @@ window.onload = (e) => {
     fetch_news()
   })
   
-  prevPage.addEventListener("click", (e) => {
-      currPage--
-      fetch_news()
-  })
   nextPage.addEventListener("click", (e) => {
       currPage++
       fetch_news()
