@@ -1,4 +1,3 @@
-
 window.onload = (e) => {
   
   const clearBtn = document.getElementById("clearBtn");
@@ -6,11 +5,29 @@ window.onload = (e) => {
   const searchBtn = document.getElementById("search");
   const searchOut = document.querySelector("[search-out]");
   const results = document.getElementById("comments");
+  const prevPage = document.getElementById("prev");  
+  const nextPage = document.getElementById("next");
+  var currPage = 1;
   
   clearBtn.addEventListener("click", clear)
   searchBtn.addEventListener("click", (e) => {
     results.innerHTML = ""
-    fetch("/api/search?query="+inputArea.value)
+    pageNav.style.display = "block"
+    currPage = 1
+    fetch_news()
+  })
+  
+  prevPage.addEventListener("click", (e) => {
+      currPage--
+      fetch_news()
+  })
+  nextPage.addEventListener("click", (e) => {
+      currPage++
+      fetch_news()
+  })
+
+  function fetch_news() {
+    fetch("/api/search?query="+inputArea.value+"&page="+currPage)
     .then(res => res.json())
     .then(data => {
       console.log(data)
@@ -21,8 +38,8 @@ window.onload = (e) => {
         results.appendChild(title)
       })
     })
-  })
-
+  }
+  
   function clear(){
     inputArea.value = "";
   }
