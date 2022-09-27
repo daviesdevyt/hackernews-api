@@ -22,10 +22,11 @@ window.onload = (e) => {
                 }
                 let children = searchOut.content.cloneNode(true).children
                 let title = children[0]
-                title.innerHTML = `<a href="/api/view-comments/${element.id}">${element.title}</a>`
+                title.innerHTML = `<a href="/api/post/${element.id}">${element.title}</a>`
                 if (element.time == null) date = "No date"
                 else date = new Date(element.time).toDateString()
-                title.innerHTML += ` <sub>${date}</sub> <cmts class='close' style="font-size:20px;">comments: ${element.comments.length}</cmts>`
+                title.innerHTML += `<sub>${date}</sub> <a href="/api/comments/${element.id}"><cmts class='close' style="font-size:20px;">| comments: ${element.comments.length}</cmts></a>`
+                if ("poll" == element.type) title.innerHTML += `<a href="/api/polloptions/${element.id}"><cmts class='close' style="font-size:20px;">polls: ${element.poll_options.length}</cmts> `
                 results.appendChild(title)
             })
         })
