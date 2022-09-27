@@ -42,10 +42,8 @@ try:
     if Post.objects.count() < 100:
         post_ids = hackernewsapi.get_latest(100)
         get_and_save_items(post_ids)
-except IntegrityError as e:
+except (IntegrityError, OperationalError) as e:
     print(e)
-except OperationalError as e:
-    pass
 
 # Create your views here.
 
@@ -186,6 +184,59 @@ def add_item(request):
         serializer = model_serializer(obj)
     except Exception as e:
         return Response("Bad request: "+str(e), status=400)
+
+    return Response(serializer.data)
+
+@api_view(["POST"])
+def edit_item(request):
+    if not request.data.get("id"):
+        return Response("Id must be provided", status=400)
+    item_types = ["comment", "story", "job", "pollopt", "poll"]
+    object_models = {"comment": Comment, "pollopt":PollOption, "post":Post}
+    model_serializers = {"comment": CommentSerializer, "pollopt":PollOptionSerializer, "post":PostSerializer}
+    item_type = request.data.get("item")
+    if item_type not in item_types:
+        return Response("Bad request: Invalid type", status=400)
+    elif item_type not in object_models:
+        model = "post"
+    else:
+        model = item_type
+    
+    model_obj = object_models[model]
+    model_serializer = model_serializers[model]
+
+    # Find the item we are to work with
+    obj = model_obj.objects.filter(id=int(request.data['id']))
+    if not obj.first():
+        return Response("Item with that ID does not exist", status=404)
+    elif obj.first().by_hackernews:
+        return Response("That item was created by hacker news and cannot be edited", status=404)
+
+    # Delete the item if delete is set
+    if request.data.get("delete"):
+        obj.first().delete()
+        return Response(item_type+" with id: "+request.data["id"]+" deleted")
+
+    # Clean up the data
+    data = dict(request.data)
+
+    del data["item"]
+
+    for i in data.copy():
+        data[i] = data[i][0] # Fixes issues with the default request.data QueryDict
+        if data[i] == "":    # Remove empty values
+            del data[i]
+
+    if data.get("time"):
+        data["time"] = datetime.fromisoformat(request.data['time'])
+
+    if data.get("dead"): # Dead comes as "on" or "None"
+        data["dead"] = True
+    
+    # Try saving the data
+    del data["id"]
+    obj.update(**data)
+    serializer = model_serializer(obj.first())
 
     return Response(serializer.data)
 

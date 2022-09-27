@@ -7,10 +7,11 @@
   <body>
     {% include 'nav.html' %}
     <br><br>
-    <form class="container" method="post" action="/api/add-item/">
+    <form class="container" method="post" action="/api/edit-item/">
       <div class="form-group">
         <label for="exampleFormControlSelect1">Post Type</label>
         <select name="item" class="form-control" id="exampleFormControlSelect1" required>
+          <option disabled selected value> -- select an option -- </option>
           <option value="story">story</option>
           <option value="job">job</option>
           <option value="comment">comment</option>
@@ -19,10 +20,16 @@
         </select>
       </div>
       <div class="form-group">
-        <label for="exampleInputPassword1">Post id</label>
-        <input type="text" class="form-control" name="post" id="exampleInputPassword1">
-        <small id="emailHelp" class="form-text text-muted">Only Commments and Poll Options should have this value</small>
+        <label for="exampleInputPassword1">Id *</label>
+        <input type="number" class="form-control" name="id" placeholder="The Id of the post to edit. (Required)" id="exampleInputPassword1" required>
       </div>
+      <hr>
+      <div class="form-group form-check">
+        <input type="checkbox" class="form-check-input" name="delete" id="exampleCheck1">
+        <label class="form-check-label" for="exampleCheck1">Delete</label>
+        <small id="emailHelp" class="form-text text-muted">If this is checked, You can ignore all the other details</small>
+      </div>
+      <hr>
       <div class="form-group">
         <label for="exampleInputPassword1">By</label>
         <input type="text" class="form-control" name="by" id="exampleInputPassword1">
@@ -38,7 +45,7 @@
       </div>
       <div class="form-group">
         <label for="exampleInputPassword1">Url</label>
-        <input type="text" class="form-control" name="url" id="exampleInputPassword1" placeholder="Url e.g https://google.com">
+        <input type="url" class="form-control" name="url" id="exampleInputPassword1" placeholder="Url e.g https://google.com">
         <small id="emailHelp" class="form-text text-muted">Only jobs, stories and polls can have this</small>
       </div>
       <div class="form-group">

@@ -18,3 +18,5 @@ def add_item(request):
 
 def top(request):
     return render(request, "top.html")
+def edit(request):
+    return render(request, "edit.html")

@@ -8,4 +8,5 @@ urlpatterns = [
     path("latest/", views.latest),
     path("add-item/", views.add_item),
     path("top/", views.top),
+    path("edit/", views.edit),
 ]
