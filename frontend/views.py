@@ -15,3 +15,6 @@ def latest(request):
 
 def add_item(request):
     return render(request, "add-item.html")
+
+def top(request):
+    return render(request, "top.html")

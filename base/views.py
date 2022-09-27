@@ -1,6 +1,5 @@
 from collections import OrderedDict
 from datetime import datetime
-from multiprocessing import reduction
 from pytz import timezone
 from time import sleep
 from rest_framework.decorators import api_view
@@ -10,9 +9,8 @@ from . import hackernewsapi
 import threading
 from .models import PollOption, Post, Comment
 from django.db import IntegrityError
+from django.db.models import Count
 from rest_framework.pagination import DjangoPaginator
-
-from base import serializer
 
 # Generator function to get the items
 def get_and_save_items(items):
@@ -107,6 +105,12 @@ def view_comments(request, id):
         return Response("Post doesnt exist")
     comments = Comment.objects.filter(post=post).all()
     serializer = CommentSerializer(comments, many=True)
+    return Response(serializer.data)
+
+@api_view(["GET"])
+def top_posts(request):
+    posts = Post.objects.annotate(num_comments=Count("comments")).order_by("-num_comments")[:10]
+    serializer = PostSerializer(posts, many=True)
     return Response(serializer.data)
 
 @api_view(["GET"])

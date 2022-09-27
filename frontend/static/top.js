@@ -9,7 +9,7 @@ window.onload = (e) => {
     more.addEventListener("click", fetch_news)
 
     function fetch_news() {
-        fetch("/api/latest-news?page=" + currPage)
+        fetch("/api/top-news?page=" + currPage)
         .then(res => res.json())
         .then(data => {
             currPage++
