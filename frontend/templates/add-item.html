@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+{% load static %}
+<html>
+  <head>
+    <script src="{% static 'filter.js' %}"></script>
+  </head>
+  <body>
+    {% include 'nav.html' %}
+    <br><br>
+    <form class="container" method="post" action="/api/add-item/">
+      <div class="form-group">
+        <label for="exampleFormControlSelect1">Example select</label>
+        <select name="item" class="form-control" id="exampleFormControlSelect1">
+          <option value="story">story</option>
+          <option value="job">job</option>
+          <option value="comment">comment</option>
+          <option value="poll">poll</option>
+          <option value="pollopt">poll option</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label for="exampleInputPassword1">Post id</label>
+        <input type="text" class="form-control" name="post" id="exampleInputPassword1">
+        <small id="emailHelp" class="form-text text-muted">Only Commments and Poll Options should have this value</small>
+      </div>
+      <div class="form-group">
+        <label for="exampleInputPassword1">By</label>
+        <input type="text" class="form-control" name="by" id="exampleInputPassword1">
+      </div>
+      <div class="form-group">
+        <label for="exampleInputPassword1">Title</label>
+        <input type="text" class="form-control" name="title" id="exampleInputPassword1" placeholder="Title">
+        <small id="emailHelp" class="form-text text-muted">Commments and Poll Options cannot have titles</small>
+      </div>
+      <div class="form-group">
+        <label for="exampleInputPassword1">Text</label>
+        <input type="text" class="form-control" name="text" id="exampleInputPassword1" placeholder="Text ......">
+      </div>
+      <div class="form-group">
+        <label for="exampleInputPassword1">Url</label>
+        <input type="text" class="form-control" name="url" id="exampleInputPassword1" placeholder="Url e.g https://google.com">
+        <small id="emailHelp" class="form-text text-muted">Only jobs, stories and polls can have this</small>
+      </div>
+      <div class="form-group">
+        <label for="exampleInputPassword1">Time</label>
+        <input type="datetime-local" class="form-control" name="time" id="exampleInputPassword1">
+      </div>
+      <div class="form-group form-check">
+        <input type="checkbox" class="form-check-input" name="dead" id="exampleCheck1">
+        <label class="form-check-label" for="exampleCheck1">Dead</label>
+      </div>
+      <button type="submit" class="btn btn-primary">Submit</button>
+    </form>
+  </body>
+</html>

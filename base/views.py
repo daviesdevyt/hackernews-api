@@ -102,23 +102,52 @@ def index(request):
     return Response()
 
 @api_view(["POST"])
-def add_item(request, item_type):
+def add_item(request):
     item_types = ["comment", "story", "job", "pollopt", "poll"]
     object_models = {"comment": Comment, "pollopt":PollOption, "post":Post}
     model_serializers = {"comment": CommentSerializer, "pollopt":PollOptionSerializer, "post":PostSerializer}
-    
+    item_type = request.data.get("item")
     if item_type not in item_types:
         return Response("Bad request: Invalid type", status=400)
     elif item_type not in object_models:
         model = "post"
     else:
-        model = item_type()
+        model = item_type
     
     model_obj = object_models[model]
     model_serializer = model_serializers[model]
 
+    # Clean up the data
+    data = dict(request.data)
+
+    del data["item"]
+
+    for i in data.copy():
+        data[i] = data[i][0] # Fixes issues with the default request.data QueryDict
+        if data[i] == "":    # Remove empty values
+            del data[i]
+    
+    data["type"] = item_type # Set the item type
+
+    if data.get("time"):
+        data["time"] = datetime.fromisoformat(request.data['time'])
+
+    if data.get("dead"): # Dead comes as "on" or "None"
+        data["dead"] = True
+
+    if model != "post":
+        if request.data.get("post"):
+            post = Post.objects.filter(id=int(data["post"])).first()
+            if not post:
+                return Response("Post id doesnt exist", status=404)
+            else:
+                data['post'] = post
+        else:
+            return Response("Bad request: "+item_type+" must have a post id", status=400)
+    
+    # Try saving the data
     try:
-        obj = model_obj.objects.create(**request.data)
+        obj = model_obj.objects.create(**data)
         serializer = model_serializer(obj)
     except Exception as e:
         return Response("Bad request: "+str(e), status=400)

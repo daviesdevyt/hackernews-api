@@ -12,3 +12,6 @@ def filter(request):
 
 def latest(request):
     return render(request, "latest-news.html")
+
+def add_item(request):
+    return render(request, "add-item.html")
