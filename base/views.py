@@ -8,7 +8,7 @@ from .serializer import CommentSerializer, PollOptionSerializer, PostSerializer
 from . import hackernewsapi
 import threading
 from .models import PollOption, Post, Comment
-from django.db import IntegrityError
+from django.db import IntegrityError, OperationalError
 from django.db.models import Count
 from rest_framework.pagination import DjangoPaginator
 
@@ -39,11 +39,13 @@ def get_and_save_items(items):
 
 # Get first 10 posts for testing purposes
 try:
-    if Post.objects.count() < 10:
-        post_ids = hackernewsapi.get_latest(10)
+    if Post.objects.count() < 100:
+        post_ids = hackernewsapi.get_latest(100)
         get_and_save_items(post_ids)
 except IntegrityError as e:
     print(e)
+except OperationalError as e:
+    pass
 
 # Create your views here.
 
@@ -105,6 +107,23 @@ def view_comments(request, id):
         return Response("Post doesnt exist")
     comments = Comment.objects.filter(post=post).all()
     serializer = CommentSerializer(comments, many=True)
+    return Response(serializer.data)
+
+@api_view(["GET"])
+def view_polloptions(request, id):
+    post = Post.objects.get(id=id)
+    if not post:
+        return Response("Post doesnt exist")
+    pollopts = PollOption.objects.filter(post=post).all()
+    serializer = PollOptionSerializer(pollopts, many=True)
+    return Response(serializer.data)
+
+@api_view(["GET"])
+def view_post(request, id):
+    post = Post.objects.get(id=id)
+    if not post:
+        return Response("Post doesnt exist")
+    serializer = PostSerializer(post)
     return Response(serializer.data)
 
 @api_view(["GET"])

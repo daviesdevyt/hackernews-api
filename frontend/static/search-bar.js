@@ -7,6 +7,7 @@ window.onload = (e) => {
   const pageNav = document.querySelector("[page]");
   const results = document.getElementById("comments");
   const nextPage = document.getElementById("next");
+  const form = document.querySelector(".input_con");
   var currPage = 1;
   
   clearBtn.addEventListener("click", clear)
@@ -18,8 +19,15 @@ window.onload = (e) => {
   })
   
   nextPage.addEventListener("click", (e) => {
-      currPage++
-      fetch_news()
+    currPage++
+    fetch_news()
+  })
+  
+  form.addEventListener("submit", (e) => { 
+    e.preventDefault()
+    results.innerHTML = ""
+    pageNav.style.display = "block"
+    fetch_news()
   })
 
   function fetch_news() {
@@ -32,6 +40,7 @@ window.onload = (e) => {
           if (element.has_next != true){
               nextPage.style.display = "none"
           }
+          return
         }
         let children = searchOut.content.cloneNode(true).children
         let title = children[0]

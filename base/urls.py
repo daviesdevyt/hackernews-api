@@ -8,5 +8,7 @@ urlpatterns = [
     path("top-news", views.top_posts),
     path("search/", views.search),
     path("add-item/", views.add_item),
-    path("view-comments/<int:id>", views.view_comments),
+    path("comments/<int:id>", views.view_comments),
+    path("polloptions/<int:id>", views.view_polloptions),
+    path("post/<int:id>", views.view_post),
 ]
