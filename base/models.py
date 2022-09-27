@@ -10,6 +10,7 @@ class Base(models.Model):
     time = models.DateTimeField(max_length=100, null=True, blank=True)
     dead = models.BooleanField(max_length=100, null=True, blank=True)
     text = models.TextField(null=True, blank=True)  
+    by_hackernews = models.BooleanField(default=True)
     class Meta:
         abstract = True
 

@@ -1,5 +1,6 @@
 from collections import OrderedDict
 from datetime import datetime
+from multiprocessing import reduction
 from pytz import timezone
 from time import sleep
 from rest_framework.decorators import api_view
@@ -10,6 +11,8 @@ import threading
 from .models import PollOption, Post, Comment
 from django.db import IntegrityError
 from rest_framework.pagination import DjangoPaginator
+
+from base import serializer
 
 # Generator function to get the items
 def get_and_save_items(items):
@@ -98,6 +101,15 @@ def search(request):
     return Response()
 
 @api_view(["GET"])
+def view_comments(request, id):
+    post = Post.objects.get(id=id)
+    if not post:
+        return Response("Post doesnt exist")
+    comments = Comment.objects.filter(post=post).all()
+    serializer = CommentSerializer(comments, many=True)
+    return Response(serializer.data)
+
+@api_view(["GET"])
 def index(request):
     return Response()
 
@@ -147,7 +159,7 @@ def add_item(request):
     
     # Try saving the data
     try:
-        obj = model_obj.objects.create(**data)
+        obj = model_obj.objects.create(**data, by_hackernews=False)
         serializer = model_serializer(obj)
     except Exception as e:
         return Response("Bad request: "+str(e), status=400)

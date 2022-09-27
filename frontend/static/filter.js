@@ -50,7 +50,7 @@ window.onload = (e) => {
             }
             let children = searchOut.content.cloneNode(true).children
             let title = children[0]
-            if (element.title != undefined) title.innerHTML = element.title
+            if (element.title != undefined) title.innerHTML = `<a href="/api/view-comments/${element.id}">${element.title}</a>`
             else if (element.text != undefined) title.innerHTML = element.text.slice(0, 50)+"..."
             else if (element.url != undefined) title.innerHTML = element.url.slice(0, 50)+"..."
             else title.innerHTML = "No presentable value"

@@ -22,7 +22,7 @@ window.onload = (e) => {
                 }
                 let children = searchOut.content.cloneNode(true).children
                 let title = children[0]
-                title.innerHTML = element.title
+                title.innerHTML = `<a href="/api/view-comments/${element.id}">${element.title}</a>`
                 if (element.time == null) date = "No date"
                 else date = new Date(element.time).toDateString()
                 title.innerHTML += ` <sub>${date}</sub>`
