@@ -47,13 +47,18 @@ window.onload = (e) => {
                     prevPage.style.visibility = "visible"
                 }
                 if (element.page_count != undefined) pageCount.innerHTML = element.page_count
+                return
             }
             let children = searchOut.content.cloneNode(true).children
             let title = children[0]
-            if (element.title != undefined) title.innerHTML = `<a href="/api/view-comments/${element.id}">${element.title}</a>`
+            if (element.title != undefined && "comment" != element.type) title.innerHTML = `<a href="/api/view-comments/${element.id}">${element.title}</a>`
             else if (element.text != undefined) title.innerHTML = element.text.slice(0, 50)+"..."
             else if (element.url != undefined) title.innerHTML = element.url.slice(0, 50)+"..."
             else title.innerHTML = "No presentable value"
+            
+            if (element.time == null) date = "No date"
+            else date = new Date(element.time).toDateString()
+            if ("comment" != element.type) title.innerHTML += ` <sub>${date}</sub> <cmts class='close' style="font-size:20px;">comments: ${element.comments.length}</cmts>`
             results.appendChild(title)
         })
     })}
