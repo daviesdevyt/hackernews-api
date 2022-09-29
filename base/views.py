@@ -1,52 +1,17 @@
 from collections import OrderedDict
 from datetime import datetime
-from pytz import timezone
-from time import sleep
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
+from .tasks import get_initial_items
 from .serializer import CommentSerializer, PollOptionSerializer, PostSerializer
-from . import hackernewsapi
-import threading
 from .models import PollOption, Post, Comment
-from django.db import IntegrityError, OperationalError
 from django.db.models import Count
 from rest_framework.pagination import DjangoPaginator
 
-# Generator function to get the items
-def get_and_save_items(items):
-    for item in items:
-        data = hackernewsapi.get_item(item)
 
-        if data.get("kids"):
-            del data['kids']
-
-        if data.get("time"):
-            data["time"] = datetime.fromtimestamp(data["time"], tz=timezone('UTC'))
-
-        post_type = data['type']
-        if post_type in ["comment", "pollopt"]:
-            if data.get('parent'):
-                parent = Post.objects.filter(id=data['parent']).first()
-                data['post'] = parent if parent else None
-                del data['parent']
-            if post_type == "comment":
-                Comment.objects.create(**data)
-            elif post_type == "pollopt":
-                PollOption.objects.create(**data)
-            continue
-
-        Post.objects.create(**data)
-
-# Get first 10 posts for testing purposes
-try:
-    if Post.objects.count() < 100:
-        post_ids = hackernewsapi.get_latest(100)
-        get_and_save_items(post_ids)
-except (IntegrityError, OperationalError) as e:
-    print(e)
+get_initial_items.delay() # Celery job to populate db
 
 # Create your views here.
-
 @api_view(["GET"])
 def latest(request):
     latest_posts = Post.objects.all().order_by("-id")
@@ -239,23 +204,3 @@ def edit_item(request):
     serializer = model_serializer(obj.first())
 
     return Response(serializer.data)
-
-def get_data(): #Cron job for every second
-    def max_on_db():
-        last_post = Post.objects.last()
-        last_comment = Comment.objects.last()
-        last_option = PollOption.objects.last()
-        last_post_id = last_post.id if last_post else 0
-        last_comment_id = last_comment.id if last_comment else 0
-        last_option_id = last_option.id if last_option else 0
-        return max(last_post_id, last_comment_id, last_option_id)
-        
-    while True:
-        max_id = hackernewsapi.get_max_id()
-        last_on_db = max_on_db()
-        post_ids = hackernewsapi.get_latest(max_id-last_on_db)
-        get_and_save_items(post_ids)
-        sleep(5*60)
-
-t = threading.Thread(target=get_data, daemon=True)
-t.start()
